@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.function.Consumer;
 
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
@@ -29,6 +30,8 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandler;
 import org.eclipse.jetty.server.handler.HandlerCollection;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
+import org.eclipse.jetty.util.thread.ThreadPool;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.cloud.CloudPlatform;
@@ -46,6 +49,7 @@ import org.springframework.util.unit.DataSize;
  *
  * @author Brian Clozel
  * @author Phillip Webb
+ * @author HaiTao Zhang
  * @since 2.0.0
  */
 public class JettyWebServerFactoryCustomizer
@@ -78,8 +82,16 @@ public class JettyWebServerFactoryCustomizer
 						.addServerCustomizers(new MaxHttpHeaderSizeCustomizer(maxHttpHeaderSize)));
 		propertyMapper.from(jettyProperties::getMaxHttpPostSize).asInt(DataSize::toBytes).when(this::isPositive)
 				.to((maxHttpPostSize) -> customizeMaxHttpPostSize(factory, maxHttpPostSize));
+		propertyMapper.from(jettyProperties::getMaxThreads).when(this::isPositive)
+				.to((maxThreads) -> customizeThreadPool(factory, (threadPool) -> threadPool.setMaxThreads(maxThreads)));
+		propertyMapper.from(jettyProperties::getMinThreads).when(this::isPositive)
+				.to((minThreads) -> customizeThreadPool(factory, (threadPool) -> threadPool.setMinThreads(minThreads)));
+		propertyMapper.from(jettyProperties::getThreadIdleTimeout).whenNonNull().asInt(Duration::toMillis).to(
+				(idleTimeout) -> customizeThreadPool(factory, (threadPool) -> threadPool.setIdleTimeout(idleTimeout)));
 		propertyMapper.from(properties::getConnectionTimeout).whenNonNull()
-				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
+				.to((connectionTimeout) -> customizeIdleTimeout(factory, connectionTimeout));
+		propertyMapper.from(jettyProperties::getConnectionIdleTimeout).whenNonNull()
+				.to((idleTimeout) -> customizeIdleTimeout(factory, idleTimeout));
 		propertyMapper.from(jettyProperties::getAccesslog).when(ServerProperties.Jetty.Accesslog::isEnabled)
 				.to((accesslog) -> customizeAccessLog(factory, accesslog));
 	}
@@ -96,7 +108,7 @@ public class JettyWebServerFactoryCustomizer
 		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
 	}
 
-	private void customizeConnectionTimeout(ConfigurableJettyWebServerFactory factory, Duration connectionTimeout) {
+	private void customizeIdleTimeout(ConfigurableJettyWebServerFactory factory, Duration connectionTimeout) {
 		factory.addServerCustomizers((server) -> {
 			for (org.eclipse.jetty.server.Connector connector : server.getConnectors()) {
 				if (connector instanceof AbstractConnector) {
@@ -128,6 +140,15 @@ public class JettyWebServerFactoryCustomizer
 				}
 			}
 
+		});
+	}
+
+	private void customizeThreadPool(ConfigurableJettyWebServerFactory factory, Consumer<QueuedThreadPool> customizer) {
+		factory.addServerCustomizers((connector) -> {
+			ThreadPool threadPool = connector.getThreadPool();
+			if (threadPool instanceof QueuedThreadPool) {
+				customizer.accept((QueuedThreadPool) threadPool);
+			}
 		});
 	}
 

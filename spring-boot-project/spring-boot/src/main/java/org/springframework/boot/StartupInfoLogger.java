@@ -87,7 +87,7 @@ class StartupInfoLogger {
 		message.append("Started ");
 		appendApplicationName(message);
 		message.append(" in ");
-		message.append(stopWatch.getTotalTimeSeconds());
+		message.append(stopWatch.getTotalTimeMillis() / 1000.0);
 		message.append(" seconds");
 		try {
 			double uptime = ManagementFactory.getRuntimeMXBean().getUptime() / 1000.0;
@@ -126,7 +126,7 @@ class StartupInfoLogger {
 	}
 
 	private void appendPid(StringBuilder message) {
-		append(message, "with PID ", () -> new ApplicationPid());
+		append(message, "with PID ", ApplicationPid::new);
 	}
 
 	private void appendContext(StringBuilder message) {

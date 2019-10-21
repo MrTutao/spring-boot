@@ -86,7 +86,7 @@ public class GroovyTemplateAutoConfiguration {
 				if (!location.exists(this.applicationContext)) {
 					logger.warn("Cannot find template location: " + location
 							+ " (please add some templates, check your Groovy "
-							+ "configuration, or set spring.groovy.template." + "check-template-location=false)");
+							+ "configuration, or set spring.groovy.template.check-template-location=false)");
 				}
 			}
 		}
@@ -102,10 +102,7 @@ public class GroovyTemplateAutoConfiguration {
 			try {
 				ProtectionDomain domain = MarkupTemplateEngine.class.getProtectionDomain();
 				CodeSource codeSource = domain.getCodeSource();
-				if (codeSource != null && codeSource.getLocation().toString().contains("-all")) {
-					return true;
-				}
-				return false;
+				return codeSource != null && codeSource.getLocation().toString().contains("-all");
 			}
 			catch (Exception ex) {
 				return false;
