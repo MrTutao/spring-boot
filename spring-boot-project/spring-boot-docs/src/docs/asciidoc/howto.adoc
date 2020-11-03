@@ -598,7 +598,7 @@ This support depends on the chosen web server and the application environment, s
 [NOTE]
 ====
 Spring Boot does not advise using `h2c`, the cleartext version of the HTTP/2 protocol.
-As a result, the next sections require to <<howto-configure-ssl, configure SSL first>>.
+As a result, the following sections require you to <<howto-configure-ssl, configure SSL first>>.
 If you still choose to use `h2c`, you can check <<howto-configure-http2-h2c, the dedicated section>>.
 ====
 
@@ -652,8 +652,8 @@ As of Undertow 1.4.0+, HTTP/2 is supported without any additional requirement on
 
 
 [[howto-configure-http2-h2c]]
-==== h2c with supported servers
-To enable `h2c`, you need to leave the configprop:server.http2.enabled[] property set to `false`,
+==== HTTP/2 Cleartext with supported servers
+To enable HTTP/2 with cleartext support, you need to leave the configprop:server.http2.enabled[] property set to `false`,
 and instead apply a customizer specific to your choice of server:
 
 For Tomcat, we need to add an upgrade protocol:
@@ -706,7 +706,6 @@ For Undertow, we need to enable the HTTP2 option:
 		};
 	}
 ----
-
 
 
 
@@ -2218,7 +2217,7 @@ In addition to YAML, Liquibase also supports JSON, XML, and SQL change log forma
 By default, Liquibase autowires the (`@Primary`) `DataSource` in your context and uses that for migrations.
 If you need to use a different `DataSource`, you can create one and mark its `@Bean` as `@LiquibaseDataSource`.
 If you do so and you want two data sources, remember to create another one and mark it as `@Primary`.
-Alternatively, you can use Liquibase's native `DataSource` by setting `spring.liquibase.[url,user,password]` in external properties.
+Alternatively, you can use Liquibase's native `DataSource` by setting `spring.liquibase.[driver-class-name,url,user,password]` in external properties.
 Setting either `spring.liquibase.url` or `spring.liquibase.user` is sufficient to cause Liquibase to use its own `DataSource`.
 If any of the three properties has not been set, the value of its equivalent `spring.datasource` property will be used.
 

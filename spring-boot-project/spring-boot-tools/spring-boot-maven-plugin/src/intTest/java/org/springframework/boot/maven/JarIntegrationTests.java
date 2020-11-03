@@ -310,7 +310,8 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 						"snapshot-dependencies", "application");
 				assertThat(layerIndex.get("application")).contains("BOOT-INF/lib/jar-release-0.0.1.RELEASE.jar",
 						"BOOT-INF/lib/jar-snapshot-0.0.1.BUILD-SNAPSHOT.jar");
-				assertThat(layerIndex.get("dependencies")).contains("BOOT-INF/lib/log4j-api-2.12.1.jar");
+				assertThat(layerIndex.get("dependencies"))
+						.anyMatch((dependency) -> dependency.startsWith("BOOT-INF/lib/log4j-api-2"));
 			}
 			catch (IOException ex) {
 			}
@@ -401,6 +402,7 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			while (line != null) {
 				if (line.startsWith("- ")) {
 					layer = line.substring(3, line.length() - 2);
+					index.put(layer, new ArrayList<>());
 				}
 				else if (line.startsWith("  - ")) {
 					index.computeIfAbsent(layer, (key) -> new ArrayList<>()).add(line.substring(5, line.length() - 1));

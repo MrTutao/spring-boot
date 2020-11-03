@@ -102,7 +102,7 @@ bom {
 			]
 		}
 	}
-	library("AssertJ", "3.17.2") {
+	library("AssertJ", "3.18.0") {
 		group("org.assertj") {
 			modules = [
 				"assertj-core"
@@ -209,7 +209,7 @@ bom {
 			]
 		}
 	}
-	library("Commons Pool2", "2.8.1") {
+	library("Commons Pool2", "2.9.0") {
 		group("org.apache.commons") {
 			modules = [
 				"commons-pool2"
@@ -248,7 +248,7 @@ bom {
 			]
 		}
 	}
-	library("Dropwizard Metrics", "4.1.13") {
+	library("Dropwizard Metrics", "4.1.14") {
 		group("io.dropwizard.metrics") {
 			imports = [
 				"metrics-bom"
@@ -271,7 +271,7 @@ bom {
 			]
 		}
 	}
-	library("Elasticsearch", "7.9.2") {
+	library("Elasticsearch", "7.9.3") {
 		group("org.elasticsearch") {
 			modules = [
 				"elasticsearch"
@@ -304,7 +304,7 @@ bom {
 			]
 		}
 	}
-	library("Flyway", "7.0.2") {
+	library("Flyway", "7.1.1") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core"
@@ -792,7 +792,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty", "9.4.32.v20200930") {
+	library("Jetty", "9.4.33.v20201020") {
 		group("org.eclipse.jetty") {
 			imports = [
 				"jetty-bom"
@@ -829,12 +829,13 @@ bom {
 			]
 		}
 	}
-	library("jOOQ", "3.13.5") {
+	library("jOOQ", "3.14.0") {
 		group("org.jooq") {
 			modules = [
 				"jooq",
-				"jooq-meta",
-				"jooq-codegen"
+				"jooq-codegen",
+				"jooq-kotlin",
+				"jooq-meta"
 			]
 			plugins = [
 				"jooq-codegen-maven"
@@ -922,14 +923,14 @@ bom {
 			]
 		}
 	}
-	library("Kotlin Coroutines", "1.4.0-M1") {
+	library("Kotlin Coroutines", "1.4.0") {
 		group("org.jetbrains.kotlinx") {
 			imports = [
 				"kotlinx-coroutines-bom"
 			]
 		}
 	}
-	library("Lettuce", "6.0.0.RELEASE") {
+	library("Lettuce", "6.0.1.RELEASE") {
 		group("io.lettuce") {
 			modules = [
 				"lettuce-core"
@@ -967,7 +968,7 @@ bom {
 			]
 		}
 	}
-	library("Lombok", "1.18.14") {
+	library("Lombok", "1.18.16") {
 		group("org.projectlombok") {
 			modules = [
 				"lombok"
@@ -1107,7 +1108,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.5.5") {
+	library("Micrometer", "1.6.0") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -1126,7 +1127,7 @@ bom {
 			]
 		}
 	}
-	library("Mockito", "3.5.13") {
+	library("Mockito", "3.6.0") {
 		group("org.mockito") {
 			modules = [
 				"mockito-core",
@@ -1135,7 +1136,7 @@ bom {
 			]
 		}
 	}
-	library("MongoDB", "4.1.0") {
+	library("MongoDB", "4.1.1") {
 		group("org.mongodb") {
 			modules = [
 				"bson",
@@ -1153,7 +1154,7 @@ bom {
 			]
 		}
 	}
-	library("MySQL", "8.0.21") {
+	library("MySQL", "8.0.22") {
 		group("mysql") {
 			modules = [
 				"mysql-connector-java" {
@@ -1176,7 +1177,7 @@ bom {
 			]
 		}
 	}
-	library("Netty", "4.1.52.Final") {
+	library("Netty", "4.1.53.Final") {
 		group("io.netty") {
 			imports = [
 				"netty-bom"
@@ -1191,14 +1192,14 @@ bom {
 			]
 		}
 	}
-	library("OAuth2 OIDC SDK", "8.22") {
+	library("OAuth2 OIDC SDK", "8.23.1") {
 		group("com.nimbusds") {
 			modules = [
 				"oauth2-oidc-sdk"
 			]
 		}
 	}
-	library("Nimbus JOSE JWT", "9.0.1") {
+	library("Nimbus JOSE JWT", "9.1.1") {
 		group("com.nimbusds") {
 			modules = [
 				"nimbus-jose-jwt"
@@ -1244,7 +1245,7 @@ bom {
 			]
 		}
 	}
-	library("Oracle Database", "19.7.0.0") {
+	library("Oracle Database", "19.8.0.0") {
 		group("com.oracle.database.jdbc") {
 			imports = [
 				"ojdbc-bom"
@@ -1258,7 +1259,7 @@ bom {
 			]
 		}
 	}
-	library("Postgresql", "42.2.17") {
+	library("Postgresql", "42.2.18") {
 		group("org.postgresql") {
 			modules = [
 				"postgresql"
@@ -1296,14 +1297,14 @@ bom {
 			]
 		}
 	}
-	library("R2DBC Bom", "Arabba-SR7") {
+	library("R2DBC Bom", "Arabba-SR8") {
 		group("io.r2dbc") {
 			imports = [
 					"r2dbc-bom"
 			]
 		}
 	}
-	library("Rabbit AMQP Client", "5.9.0") {
+	library("Rabbit AMQP Client", "5.10.0") {
 		group("com.rabbitmq") {
 			modules = [
 				"amqp-client"
@@ -1317,7 +1318,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2020.0.0-SNAPSHOT") {
+	library("Reactor Bom", "2020.0.0") {
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
@@ -1337,7 +1338,7 @@ bom {
 			]
 		}
 	}
-	library("RSocket", "1.1.0-RC1") {
+	library("RSocket", "1.1.0") {
 		group("io.rsocket") {
 			imports = [
 				"rsocket-bom"
@@ -1473,7 +1474,7 @@ bom {
 			]
 		}
 	}
-	library("SendGrid", "4.6.6") {
+	library("SendGrid", "4.6.7") {
 		group("com.sendgrid") {
 			modules = [
 				"sendgrid-java"
@@ -1533,7 +1534,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "2.3.0-RC1") {
+	library("Spring AMQP", "2.3.0") {
 		group("org.springframework.amqp") {
 			modules = [
 				"spring-amqp",
@@ -1543,7 +1544,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "4.3.0-RC1") {
+	library("Spring Batch", "4.3.0") {
 		group("org.springframework.batch") {
 			modules = [
 				"spring-batch-core",
@@ -1553,28 +1554,28 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2020.0.0-RC2") {
+	library("Spring Data Bom", "2020.0.0") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
 			]
 		}
 	}
-	library("Spring Framework", "5.3.0-SNAPSHOT") {
+	library("Spring Framework", "5.3.0") {
 		group("org.springframework") {
 			imports = [
 				"spring-framework-bom"
 			]
 		}
 	}
-	library("Spring HATEOAS", "1.2.0-M1") {
+	library("Spring HATEOAS", "1.2.0") {
 		group("org.springframework.hateoas") {
 			modules = [
 				"spring-hateoas"
 			]
 		}
 	}
-	library("Spring Integration", "5.4.0-RC1") {
+	library("Spring Integration", "5.4.0") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
@@ -1626,7 +1627,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Session Bom", "2020.0.0-RC1") {
+	library("Spring Session Bom", "2020.0.0") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"

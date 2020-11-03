@@ -796,12 +796,45 @@ To import these properties, you can add the following to your `application.prope
 ----
 	spring:
 	  config:
-	    import: "optional:configtree:/etc/config"
+	    import: "optional:configtree:/etc/config/"
 ----
 
 You can then access or inject `myapp.username` and `myapp.password` properties from the `Environment` in the usual way.
 
 TIP: Configuration tree values can be bound to both string `String` and `byte[]` types depending on the contents expected.
+
+If you have multiple config trees to import from the same parent folder you can use a wildcard shortcut.
+Any `configtree:` location that ends with `/*/` will import all immediate children as config trees.
+
+For example, given the following volume:
+
+[source,indent=0]
+----
+	etc/
+	  config/
+	    dbconfig/
+	      db/
+	        username
+	        password
+	    mqconfig/
+	      mq/
+	        username
+	        password
+----
+
+You can use `configtree:/etc/config/*/` as the import location:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	spring:
+	  config:
+	    import: "optional:configtree:/etc/config/*/"
+----
+
+This will add `db.username`, `db.password`, `mq.username` and `mq.password` properties.
+
+NOTE: Directories loaded using a wildcard are sorted alphabetically.
+If you need a different order, then you should list each location as a separate import
 
 
 
@@ -853,7 +886,8 @@ For `application.properties` files a special `#---` comment is used to mark the 
 	spring.application.name=MyCloudApp
 ----
 
-NOTE: Property file separators must not have any leading or trailing whitespace and must have exactly three hyphen characters.
+NOTE: Property file separators must not have any leading whitespace and must have exactly three hyphen characters.
+The lines immediately before and after the separator must not be comments.
 
 TIP: Multi-document property files are often used in conjunction with activation properties such as `spring.config.activate.on-profile`.
 See the <<boot-features-external-config-file-activation-properties, next section>> for details.
@@ -1407,7 +1441,7 @@ NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase a
 
 | Environment Variables
 | Upper case format with underscore as the delimiter (see <<boot-features-external-config-relaxed-binding-from-environment-variables>>).
-| Numeric values surrounded by underscores (see <<boot-features-external-config-relaxed-binding-from-environment-variables>>)`
+| Numeric values surrounded by underscores (see <<boot-features-external-config-relaxed-binding-from-environment-variables>>)
 
 | System properties
 | Camel case, kebab case, or underscore notation
@@ -2204,9 +2238,17 @@ To help with the customization, some other properties are transferred from the S
 | `LOG_DATEFORMAT_PATTERN`
 | Appender pattern for log date format.
 
+| configprop:logging.charset.console[]
+| `CONSOLE_LOG_CHARSET`
+| The charset to use for console logging.
+
 | configprop:logging.pattern.file[]
 | `FILE_LOG_PATTERN`
 | The log pattern to use in a file (if `LOG_FILE` is enabled).
+
+| configprop:logging.charset.file[]
+| `FILE_LOG_CHARSET`
+| The charset to use for file logging (if `LOG_FILE` is enabled).
 
 | configprop:logging.pattern.level[]
 | `LOG_LEVEL_PATTERN`
@@ -2462,7 +2504,6 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Support for `HttpMessageConverters` (covered <<boot-features-spring-mvc-message-converters,later in this document>>).
 * Automatic registration of `MessageCodesResolver` (covered <<boot-features-spring-message-codes,later in this document>>).
 * Static `index.html` support.
-* Custom `Favicon` support (covered <<boot-features-spring-mvc-favicon,later in this document>>).
 * Automatic use of a `ConfigurableWebBindingInitializer` bean (covered <<boot-features-spring-mvc-web-binding-initializer,later in this document>>).
 
 If you want to keep those Spring Boot MVC customizations and make more {spring-framework-docs}/web.html#mvc[MVC customizations] (interceptors, formatters, view controllers, and other features), you can add your own `@Configuration` class of type `WebMvcConfigurer` but *without* `@EnableWebMvc`.
@@ -2567,7 +2608,7 @@ For instance, relocating all resources to `/resources/**` can be achieved as fol
 	    static-path-pattern: "/resources/**"
 ----
 
-You can also customize the static resource locations by using the configprop:spring.resources.static-locations[] property (replacing the default values with a list of directory locations).
+You can also customize the static resource locations by using the configprop:spring.web.resources.static-locations[] property (replacing the default values with a list of directory locations).
 The root Servlet context path, `"/"`, is automatically added as a location as well.
 
 In addition to the "`standard`" static resource locations mentioned earlier, a special case is made for https://www.webjars.org/[Webjars content].
@@ -2590,12 +2631,13 @@ To use cache busting, the following configuration configures a cache busting sol
 [source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
 	spring:
-	  resources:
-	    chain:
-	      strategy:
-	        content:
-	          enabled: true
-	          paths: "/**"
+	  web:
+	    resources:
+	      chain:
+	        strategy:
+	          content:
+	            enabled: true
+	            paths: "/**"
 ----
 
 NOTE: Links to resources are rewritten in templates at runtime, thanks to a `ResourceUrlEncodingFilter` that is auto-configured for Thymeleaf and FreeMarker.
@@ -2609,16 +2651,17 @@ A "fixed" strategy adds a static version string in the URL without changing the 
 [source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
 	spring:
-	  resources:
-	    chain:
-	      strategy:
-	        content:
-	          enabled: true
-	          paths: "/**"
-	        fixed:
-	          enabled: true
-	          paths: "/js/lib/"
-	          version: "v12"
+	  web:
+	    resources:
+	      chain:
+	        strategy:
+	          content:
+	            enabled: true
+	            paths: "/**"
+	          fixed:
+	            enabled: true
+	            paths: "/js/lib/"
+	            version: "v12"
 ----
 
 With this configuration, JavaScript modules located under `"/js/lib/"` use a fixed versioning strategy (`"/v12/js/lib/mymodule.js"`), while other resources still use the content one (`<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`).
@@ -2636,13 +2679,6 @@ Spring Boot supports both static and templated welcome pages.
 It first looks for an `index.html` file in the configured static content locations.
 If one is not found, it then looks for an `index` template.
 If either is found, it is automatically used as the welcome page of the application.
-
-
-
-[[boot-features-spring-mvc-favicon]]
-==== Custom Favicon
-As with other static resources, Spring Boot looks for a `favicon.ico` in the configured static content locations.
-If such a file is present, it is automatically used as the favicon of the application.
 
 
 
@@ -3100,7 +3136,7 @@ For instance, relocating all resources to `/resources/**` can be achieved as fol
 	    static-path-pattern: "/resources/**"
 ----
 
-You can also customize the static resource locations by using `spring.resources.static-locations`.
+You can also customize the static resource locations by using `spring.web.resources.static-locations`.
 Doing so replaces the default values with a list of directory locations.
 If you do so, the default welcome page detection switches to your custom locations.
 So, if there is an `index.html` in any of your locations on startup, it is the home page of the application.
@@ -3866,18 +3902,26 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
 	      relyingparty:
 	        registration:
 	          my-relying-party1:
-	            signing.credentials:
-                - private-key-location: "path-to-private-key"
-	              certificate-location: "path-to-certificate"
+	            signing:
+                  credentials:
+                  - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
+	            decryption:
+	              credentials:
+	              - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
 	            identityprovider:
 	              verification:
 	                credentials:
 	                - certificate-location: "path-to-verification-cert"
 	              entity-id: "remote-idp-entity-id1"
 	              sso-url: "https://remoteidp1.sso.url"
-
 	          my-relying-party2:
 	            signing:
+	              credentials:
+	              - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
+                decryption:
 	              credentials:
 	              - private-key-location: "path-to-private-key"
                     certificate-location: "path-to-certificate"
@@ -6736,7 +6780,7 @@ For instance, it is possible to customize the name of the table for the JDBC sto
 ----
 
 For setting the timeout of the session you can use the configprop:spring.session.timeout[] property.
-If that property is not set, the auto-configuration falls back to the value of configprop:server.servlet.session.timeout[].
+If that property is not set with a Servlet web appplication, the auto-configuration falls back to the value of configprop:server.servlet.session.timeout[].
 
 
 

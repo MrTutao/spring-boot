@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.nio.charset.Charset;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -70,9 +72,11 @@ class DefaultLogbackConfiguration {
 				+ "%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) "
 				+ "%clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} "
 				+ "%clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"));
+		config.getContext().putProperty("CONSOLE_LOG_CHARSET", resolve(config, "${CONSOLE_LOG_CHARSET:-default}"));
 		config.getContext().putProperty("FILE_LOG_PATTERN", resolve(config, "${FILE_LOG_PATTERN:-"
 				+ "%d{${LOG_DATEFORMAT_PATTERN:-yyyy-MM-dd HH:mm:ss.SSS}} ${LOG_LEVEL_PATTERN:-%5p} ${PID:- } --- [%t] "
 				+ "%-40.40logger{39} : %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"));
+		config.getContext().putProperty("FILE_LOG_CHARSET", resolve(config, "${FILE_LOG_CHARSET:-default}"));
 		config.logger("org.apache.catalina.startup.DigesterFactory", Level.ERROR);
 		config.logger("org.apache.catalina.util.LifecycleBase", Level.ERROR);
 		config.logger("org.apache.coyote.http11.Http11NioProtocol", Level.WARN);
@@ -87,6 +91,7 @@ class DefaultLogbackConfiguration {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		encoder.setPattern(resolve(config, "${CONSOLE_LOG_PATTERN}"));
+		encoder.setCharset(resolveCharset(config, "${CONSOLE_LOG_CHARSET}"));
 		config.start(encoder);
 		appender.setEncoder(encoder);
 		config.appender("CONSOLE", appender);
@@ -97,6 +102,7 @@ class DefaultLogbackConfiguration {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		encoder.setPattern(resolve(config, "${FILE_LOG_PATTERN}"));
+		encoder.setCharset(resolveCharset(config, "${FILE_LOG_CHARSET}"));
 		appender.setEncoder(encoder);
 		config.start(encoder);
 		appender.setFile(logFile);
@@ -131,6 +137,10 @@ class DefaultLogbackConfiguration {
 
 	private FileSize resolveFileSize(LogbackConfigurator config, String val) {
 		return FileSize.valueOf(resolve(config, val));
+	}
+
+	private Charset resolveCharset(LogbackConfigurator config, String val) {
+		return Charset.forName(resolve(config, val));
 	}
 
 	private String resolve(LogbackConfigurator config, String val) {
